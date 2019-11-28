@@ -16,10 +16,10 @@ var IndexController = (function() {
         }
 
         function onPutNumber(req, res) {
-            fuelInfoAppender.appendLine(req.params.number, function() { onLineAppended(req, res); });
+            fuelInfoAppender.appendFuelInfo(req.params.number, function() { onFuelInfoAppended(req, res); });
         }
 
-        function onLineAppended(req, res) {
+        function onFuelInfoAppended(req, res) {
             res.send('OK');
         }
 

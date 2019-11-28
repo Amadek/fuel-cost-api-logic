@@ -6,7 +6,7 @@ var FuelInfoAppender = (function() {
         this.fs = fs;
     }
 
-    FuelInfoAppender.prototype.appendLine = function(fuelInfo, callback) {
+    FuelInfoAppender.prototype.appendFuelInfo = function(fuelInfo, callback) {
         this.fs.appendFile(this.config.fuelDataPath, fuelInfo + '\n', callback);
     };
 
