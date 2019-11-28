@@ -1,11 +1,13 @@
-var fs = require('fs');
 
 var FuelInfoAppender = (function() {
 
-    function FuelInfoAppender() {}
+    function FuelInfoAppender(fs, config) {
+        this.config = config;
+        this.fs = fs;
+    }
 
-    FuelInfoAppender.prototype.append = function(fuelInfo, callback) {
-        fs.appendFile('FuelData.txt', fuelInfo + '\n', callback);
+    FuelInfoAppender.prototype.appendLine = function(fuelInfo, callback) {
+        this.fs.appendFile(this.config.fuelDataPath, fuelInfo + '\n', callback);
     };
 
     return FuelInfoAppender;
