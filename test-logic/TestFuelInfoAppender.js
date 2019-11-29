@@ -16,7 +16,7 @@ describe('TestFuelInfoAppnder', function() {
             var fuelInfoAppender = new FuelInfoAppnder(fs, config);
 
             // ACT
-            fuelInfoAppender.appendFuelInfo("foo", function() {});
+            fuelInfoAppender.appendFuelInfo({}, function() {});
 
             // ASSERT
             assert.strictEqual(appendLineCounter, 1);
