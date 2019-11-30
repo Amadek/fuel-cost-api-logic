@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./api/index.js",
-    "test": "mocha test-*/*.js"
+    "test": "semistandard */*.js && mocha test-*/*.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "mocha": "^6.2.2"
+    "mocha": "^6.2.2",
+    "semistandard": "^14.2.0"
   }
 }
