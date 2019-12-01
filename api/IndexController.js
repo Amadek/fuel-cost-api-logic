@@ -12,11 +12,16 @@ var IndexController = (function () {
       res.send('ACTIVE');
     }
 
+    function on404 (req, res) {
+      res.status('404').end()
+    }
+
     function onPutNumber (req, res) {
       var fuelInfo = {
         liters: req.params.liters,
         kiloMeters: req.params.kiloMeters,
-        forLiter: req.params.forLiter
+        forLiter: req.params.forLiter,
+        timestamp: Date.parse(new Date())
       };
 
       fuelInfoAppender.appendFuelInfo(fuelInfo, function () { onFuelInfoAppended(req, res); });
