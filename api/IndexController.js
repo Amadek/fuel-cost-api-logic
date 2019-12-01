@@ -1,33 +1,29 @@
 var fs = require('fs');
-var FuelInfoAppender = require('../logic/FuelInfoAppender');
+var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 
 var IndexController = (function () {
   function IndexController (expressApp, config) {
-    var fuelInfoAppender = new FuelInfoAppender(fs, config);
+    var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
     expressApp.get('/', onIndex);
-    expressApp.get('/add/liters/:liters(\\d+)/kiloMeters/:kiloMeters(\\d+)/forLiter/:forLiter(\\d+)', onPutNumber);
+    expressApp.get('/add/liters/:liters(\\d+)/kilometers/:kilometers(\\d+)/fuelPrice/:fuelPrice(\\d+)', onPutFuelData);
     expressApp.listen(config.port, onListen);
 
     function onIndex (req, res) {
       res.send('ACTIVE');
     }
 
-    function on404 (req, res) {
-      res.status('404').end()
-    }
-
-    function onPutNumber (req, res) {
-      var fuelInfo = {
+    function onPutFuelData (req, res) {
+      var fuelConsumption = {
         liters: req.params.liters,
-        kiloMeters: req.params.kiloMeters,
-        forLiter: req.params.forLiter,
-        timestamp: Date.parse(new Date())
+        kilometers: req.params.kilometers,
+        fuelPrice: req.params.fuelPrice,
+        created: new Date()
       };
 
-      fuelInfoAppender.appendFuelInfo(fuelInfo, function () { onFuelInfoAppended(req, res); });
+      fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () { onFuelConsumptionAppended(req, res); });
     }
 
-    function onFuelInfoAppended (req, res) {
+    function onFuelConsumptionAppended (req, res) {
       res.send('OK');
     }
 

@@ -1,6 +1,6 @@
 /* global describe, it */
 var assert = require('assert');
-var FuelInfoAppnder = require('../logic/FuelInfoAppender');
+var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 
 describe('TestFuelInfoAppnder', function () {
   describe('appendLine', function () {
@@ -12,9 +12,9 @@ describe('TestFuelInfoAppnder', function () {
       fs.appendFile = function (fileName, data, callback) {
         appendLineCounter++;
       };
-      var fuelInfoAppender = new FuelInfoAppnder(fs, config);
+      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
       // ACT
-      fuelInfoAppender.appendFuelInfo({}, function () {});
+      fuelConsumptionAppender.appendFuelConsumption({}, function () {});
       // ASSERT
       assert.strictEqual(appendLineCounter, 1);
     });
