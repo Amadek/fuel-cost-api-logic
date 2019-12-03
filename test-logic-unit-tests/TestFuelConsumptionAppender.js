@@ -2,7 +2,7 @@
 var assert = require('assert');
 var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 
-describe('TestFuelInfoAppnder', function () {
+describe('UnitTest.TestFuelConsumptionAppnder', function () {
   describe('ctor', function () {
     it('should reject nulls', function () {
       assert.throws(function () { FuelConsumptionAppender(); });
