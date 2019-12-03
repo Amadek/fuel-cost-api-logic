@@ -1,13 +1,16 @@
 /* global describe, it, before, afterEach */
 var assert = require('assert');
 var fs = require('fs');
+var path = require('path');
 var config = require('./config');
 var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 
 describe('Integration.TestFuelConsumptionAppender', function () {
   describe('appendFuelConsumption', function () {
     before(function () {
-      fs.unlink(config.fuelDataPath, function () {});
+      fs.mkdir(path.dirname(config.fuelDataPath), function () {
+        fs.unlink(config.fuelDataPath, function () {});
+      });
     });
 
     afterEach(function () {
