@@ -2,35 +2,33 @@ var fs = require('fs');
 var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 
 var IndexController = (function () {
-  function IndexController (expressApp, config) {
-    var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
-    expressApp.get('/', onIndex);
-    expressApp.get('/add/liters/:liters(\\d+)/kilometers/:kilometers(\\d+)/fuelPrice/:fuelPrice(\\d+)', onPutFuelData);
-    expressApp.listen(config.port, onListen);
-
-    function onIndex (req, res) {
-      res.send('ACTIVE');
-    }
-
-    function onPutFuelData (req, res) {
-      var fuelConsumption = {
-        liters: req.params.liters,
-        kilometers: req.params.kilometers,
-        fuelPrice: req.params.fuelPrice,
-        created: new Date()
-      };
-
-      fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () { onFuelConsumptionAppended(req, res); });
-    }
-
-    function onFuelConsumptionAppended (req, res) {
-      res.send('OK');
-    }
-
-    function onListen () {
-      console.log('Listening on ' + config.port + '...');
-    }
+  function IndexController (config) {
+    this.config = config;
+    this.fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
   }
+
+  IndexController.prototype.route = function (router) {
+    router.get('/', this.index.bind(this));
+    router.put('/add/liters/:liters/kilometers/:kilometers/fuelPrice/:fuelPrice', this.putFuelData.bind(this));
+    return router;
+  };
+
+  IndexController.prototype.index = function (req, res) {
+    res.send('ACTIVE');
+  };
+
+  IndexController.prototype.putFuelData = function (req, res, next) {
+    var fuelConsumption = {
+      liters: req.params.liters,
+      kilometers: req.params.kilometers,
+      fuelPrice: req.params.fuelPrice,
+      created: new Date()
+    };
+    this.fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function (err) {
+      if (err) return next(err);
+      res.send('OK');
+    });
+  };
 
   return IndexController;
 }());

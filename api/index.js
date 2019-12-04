@@ -3,4 +3,8 @@ var app = express();
 var config = require('./config');
 var IndexController = require('./IndexController');
 
-IndexController(app, config);
+app.use(new IndexController(config).route(express.Router()));
+
+app.listen(config.port, function () {
+  console.log('Listening on ' + config.port + '...');
+});
