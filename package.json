@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@amadek/js-sdk": "^1.0.0",
+    "@amadek/js-sdk": "^1.0.1",
     "express": "^4.17.1"
   },
   "devDependencies": {
