@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./api/index.js",
+    "nodemon": "nodemon ./api/index.js",
     "test": "mocha test-*/*.js"
   },
   "author": "",
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "mocha": "^6.2.2",
+    "nodemon": "^2.0.1",
     "semistandard": "^14.2.0"
   }
 }
