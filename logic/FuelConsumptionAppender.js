@@ -11,7 +11,23 @@ var FuelConsumptionAppender = (function () {
 
   FuelConsumptionAppender.prototype.appendFuelConsumption = function (fuelConsumption, callback) {
     IFuelConsumption.ensureImplemented(fuelConsumption);
-    this.fs.appendFile(this.config.fuelDataPath, JSON.stringify(fuelConsumption, null, 2) + ',\n', callback);
+    var self = this;
+    this.fs.access(this.config.fuelDataPath, this.fs.constants.F_OK, function (err) {
+      // Check file exists. If not, append file with one result in array.
+      if (err) return self.fs.appendFile(self.config.fuelDataPath, JSON.stringify([fuelConsumption], null, 2), callback);
+      // If exists, read data, parse, add new record and write.
+      self.fs.readFile(self.config.fuelDataPath, function (err, fileData) {
+        if (err) return console.error(err);
+        var fuelConsumptionRecords = [];
+        try {
+          fuelConsumptionRecords = JSON.parse(fileData);
+        } catch (err) {
+          console.error(err);
+        }
+        fuelConsumptionRecords.push(fuelConsumption);
+        self.fs.writeFile(self.config.fuelDataPath, JSON.stringify(fuelConsumptionRecords, null, 2), callback);
+      });
+    });
   };
 
   return FuelConsumptionAppender;

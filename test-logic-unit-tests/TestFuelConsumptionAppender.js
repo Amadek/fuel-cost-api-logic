@@ -2,7 +2,7 @@
 var assert = require('assert');
 var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 
-describe('TestFuelInfoAppnder', function () {
+describe('UnitTest.TestFuelConsumptionAppnder', function () {
   describe('ctor', function () {
     it('should reject nulls', function () {
       assert.throws(function () { FuelConsumptionAppender(); });
@@ -24,12 +24,15 @@ describe('TestFuelInfoAppnder', function () {
     });
   });
 
-  describe('appendLine', function () {
+  describe('appendFuelConsumption', function () {
     it('should ensure IFuelConsumption', function () {
       // ARRANGE
       var config = { fuelDataPath: '' };
-      var fuelConsumption = {};
-      var fs = { appendFile: function () {} };
+      var fuelConsumption = { };
+      var fs = {
+        constants: { F_OK: 1 },
+        access: function () {}
+      };
       var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
 
       // ACT, ASSERT
@@ -43,7 +46,7 @@ describe('TestFuelInfoAppnder', function () {
       assert.doesNotThrow(function () { fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () {}); });
     });
 
-    it('should use fs.appendFile', function () {
+    it('should use fs.access', function () {
       // ARRANGE
       var config = { fuelDataPath: '' };
       var fuelConsumption = {
@@ -53,8 +56,8 @@ describe('TestFuelInfoAppnder', function () {
         created: new Date()
       };
       var appendLineCounter = 0;
-      var fs = {};
-      fs.appendFile = function () { appendLineCounter++; };
+      var fs = { constants: { F_OK: 1 } };
+      fs.access = function () { appendLineCounter++; };
       var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
 
       // ACT
