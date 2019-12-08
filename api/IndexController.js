@@ -15,8 +15,9 @@ var IndexController = (function () {
     return router;
   };
 
-  IndexController.prototype.index = function (req, res) {
+  IndexController.prototype.index = function (req, res, next) {
     res.send('ACTIVE');
+    next();
   };
 
   IndexController.prototype.putFuelData = function (req, res, next) {
@@ -34,6 +35,7 @@ var IndexController = (function () {
     this.fuelConsumptionAppender.appendFuelConsumption(parseResult.fuelConsumption, function (err) {
       if (err) return next(err);
       res.send('OK');
+      next();
     });
   };
 
