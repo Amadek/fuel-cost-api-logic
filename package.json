@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node ./api/index.js",
     "nodemon": "nodemon ./api/index.js",
-    "test": "mocha test-*/*.js"
+    "test": "mocha test-*/*.js",
+    "webpack-dev": "webpack --watch",
+    "webpack-server": ""
   },
   "author": "",
   "license": "ISC",
@@ -15,8 +17,14 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.7.5",
+    "@babel/preset-env": "^7.7.6",
+    "babel-loader": "^8.0.6",
     "mocha": "^6.2.2",
     "nodemon": "^2.0.1",
-    "semistandard": "^14.2.0"
+    "semistandard": "^14.2.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
   }
 }
