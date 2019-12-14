@@ -1,43 +1,32 @@
 /* global describe, it, before, afterEach */
+require('dotenv').config({ path: '.env.test' });
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
-var config = require('./config');
 var IndexController = require('../api/IndexController');
 
 describe('TestIndexController', function () {
-  describe('index', function () {
-    it('should not throw exception', function (done) {
-      // ARRANGE
-      var res = { send: function () {} };
-      var indexController = new IndexController(config);
-
-      // ACT, ASSERT
-      indexController.index({}, res, done);
-    });
-  });
-
-  describe('putFuelData', function () {
+  describe('postFuelConsumption', function () {
     before(function () {
-      fs.mkdir(path.dirname(config.fuelDataPath), function () {
-        fs.unlink(config.fuelDataPath, function () {});
+      fs.mkdir(path.dirname(process.env.FUEL_DATA_PATH), function () {
+        fs.unlink(process.env.FUEL_DATA_PATH, function () {});
       });
     });
 
     afterEach(function () {
-      fs.unlink(config.fuelDataPath, function () {});
+      fs.unlink(process.env.FUEL_DATA_PATH, function () {});
     });
 
     it('should create a new file when not exists', function (done) {
       // ARRANGE
       var fuelConsumption = createFuelConsumption();
-      var req = { params: fuelConsumption };
-      var res = { send: function () {} };
-      var indexController = new IndexController(config);
+      var req = { body: fuelConsumption };
+      var res = createResponse();
+      var indexController = new IndexController(process.env);
       // ACT
-      indexController.putFuelData(req, res, function (err) {
+      indexController.postFuelConsumption(req, res, function (err) {
         if (err) return done(err);
-        fs.readFile(config.fuelDataPath, function (err, fileData) {
+        fs.readFile(process.env.FUEL_DATA_PATH, function (err, fileData) {
           if (err) return done(err);
           // ASSERT
           var fuelConsumptionRecords = JSON.parse(fileData);
@@ -54,16 +43,16 @@ describe('TestIndexController', function () {
       // ARRANGE
       var fuelConsumption0 = createFuelConsumption();
       var fuelConsumption1 = createFuelConsumption();
-      var req0 = { params: fuelConsumption0 };
-      var req1 = { params: fuelConsumption1 };
-      var res = { send: function () {} };
-      var indexController = new IndexController(config);
+      var req0 = { body: fuelConsumption0 };
+      var req1 = { body: fuelConsumption1 };
+      var res = createResponse();
+      var indexController = new IndexController(process.env);
       // ACT
-      indexController.putFuelData(req0, res, function (err) {
+      indexController.postFuelConsumption(req0, res, function (err) {
         if (err) return done(err);
-        indexController.putFuelData(req1, res, function (err) {
+        indexController.postFuelConsumption(req1, res, function (err) {
           if (err) return done(err);
-          fs.readFile(config.fuelDataPath, function (err, fileData) {
+          fs.readFile(process.env.FUEL_DATA_PATH, function (err, fileData) {
             if (err) return done(err);
             // ASSERT
             var fuelConsumptionRecords = JSON.parse(fileData);
@@ -85,5 +74,12 @@ function createFuelConsumption () {
     kilometers: Math.floor(Math.random() * 50 + 300),
     fuelPrice: Math.floor(Math.random() * 2 + 1),
     created: new Date()
+  };
+}
+
+function createResponse () {
+  return {
+    send: function () {},
+    status: function () { return { end: function () {} }; }
   };
 }

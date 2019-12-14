@@ -2,7 +2,7 @@
 var assert = require('assert');
 var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 
-describe('UnitTest.TestFuelConsumptionAppnder', function () {
+describe('UnitTest.TestFuelConsumptionAppender', function () {
   describe('ctor', function () {
     it('should reject nulls', function () {
       assert.throws(function () { FuelConsumptionAppender(); });
@@ -13,27 +13,26 @@ describe('UnitTest.TestFuelConsumptionAppnder', function () {
     it('should assign properties', function () {
       // ARRANGE
       var fs = {};
-      var config = {};
+      var env = {};
 
       // ACT
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
+      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, env);
 
       // ASSERT
       assert.strictEqual(fuelConsumptionAppender.fs, fs);
-      assert.strictEqual(fuelConsumptionAppender.config, config);
+      assert.strictEqual(fuelConsumptionAppender.env, env);
     });
   });
 
   describe('appendFuelConsumption', function () {
     it('should ensure IFuelConsumption', function () {
       // ARRANGE
-      var config = { fuelDataPath: '' };
       var fuelConsumption = { };
       var fs = {
         constants: { F_OK: 1 },
         access: function () {}
       };
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
+      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, {});
 
       // ACT, ASSERT
       assert.throws(function () { fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () {}); });
@@ -48,7 +47,6 @@ describe('UnitTest.TestFuelConsumptionAppnder', function () {
 
     it('should use fs.access', function () {
       // ARRANGE
-      var config = { fuelDataPath: '' };
       var fuelConsumption = {
         liters: 45,
         kilometers: 300,
@@ -58,7 +56,7 @@ describe('UnitTest.TestFuelConsumptionAppnder', function () {
       var appendLineCounter = 0;
       var fs = { constants: { F_OK: 1 } };
       fs.access = function () { appendLineCounter++; };
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
+      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, {});
 
       // ACT
       fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () {});

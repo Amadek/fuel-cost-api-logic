@@ -1,10 +1,11 @@
+require('dotenv').config({ path: '.env.dev' });
 var express = require('express');
 var app = express();
-var config = require('./config');
 var IndexController = require('./IndexController');
 
-app.use(new IndexController(config).route(express.Router()));
+app.use(express.json());
+app.use(new IndexController(process.env).route(express.Router()));
 
-app.listen(config.port, function () {
-  console.log('Listening on ' + config.port + '...');
+app.listen(process.env.API_PORT, function () {
+  console.log('Listening on ' + process.env.API_PORT + '...');
 });

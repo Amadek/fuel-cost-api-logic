@@ -4,17 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./api/index.js",
+    "start": "SET ENVIRONMENT=dev & node ./api/index.js",
     "nodemon": "nodemon ./api/index.js",
-    "test": "mocha test-*/*.js"
+    "test": "mocha tests/*.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@amadek/js-sdk": "^1.0.1",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "http-errors": "^1.7.3"
   },
   "devDependencies": {
+    "dotenv": "^8.2.0",
     "mocha": "^6.2.2",
     "nodemon": "^2.0.1",
     "semistandard": "^14.2.0"
