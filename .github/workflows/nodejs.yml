@@ -26,6 +26,8 @@ jobs:
     - name: npm install, build, and test
       run: |
         npm install
-        npm test
+        npm run testlinux
       env:
         CI: true
+        SHOULD_RUN_API: false
+        FUEL_DATA_PATH: output/FuelDataTest.json

@@ -1,6 +1,7 @@
 var fs = require('fs');
 var FuelConsumptionParser = require('../logic/FuelConsumptionParser'); 
 var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
+var createError = require('http-errors');
 
 var IndexController = (function () {
   function IndexController (config) {
@@ -10,31 +11,26 @@ var IndexController = (function () {
   }
 
   IndexController.prototype.route = function (router) {
-    router.get('/', this.index.bind(this));
-    router.put('/add/liters/:liters/kilometers/:kilometers/fuelPrice/:fuelPrice', this.putFuelData.bind(this));
+    router.post('/fuelConsumption', this.postFuelConsumption.bind(this));
     return router;
   };
 
-  IndexController.prototype.index = function (req, res, next) {
-    res.send('ACTIVE');
-    next();
-  };
+  IndexController.prototype.postFuelConsumption = function (req, res, next) {
+    var fuelConsumptionFromRequest = req.body;
+    fuelConsumptionFromRequest.created = new Date();
 
-  IndexController.prototype.putFuelData = function (req, res, next) {
-    var fuelConsumptionFromRequest = {
-      liters: req.params.liters,
-      kilometers: req.params.kilometers,
-      fuelPrice: req.params.fuelPrice,
-      created: new Date()
-    };
+    try {
+      var parseResult = this.fuelConsumptionParser.parse(fuelConsumptionFromRequest);
+    } catch {
+      return next(createError(400, 'Failed to parse fuel consumption data.'));
+    }
 
-    var parseResult = this.fuelConsumptionParser.parse(fuelConsumptionFromRequest);
-
-    if (!parseResult.success) return next(new Error(parseResult.message));
+    if (!parseResult.success) return next(createError(400, parseResult.message));
 
     this.fuelConsumptionAppender.appendFuelConsumption(parseResult.fuelConsumption, function (err) {
       if (err) return next(err);
-      res.send('OK');
+      // Send status code 'Created'.
+      res.status(201).end();
       next();
     });
   };
