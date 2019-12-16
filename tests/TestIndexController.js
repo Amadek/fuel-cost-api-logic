@@ -1,5 +1,5 @@
 /* global describe, it, before, afterEach */
-require('dotenv').config({ path: '.env.test' });
+var config = require('../config');
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
@@ -8,13 +8,13 @@ var IndexController = require('../api/IndexController');
 describe('TestIndexController', function () {
   describe('postFuelConsumption', function () {
     before(function () {
-      fs.mkdir(path.dirname(process.env.FUEL_DATA_PATH), function () {
-        fs.unlink(process.env.FUEL_DATA_PATH, function () {});
+      fs.mkdir(path.dirname(config.fuelDataPath), function () {
+        fs.unlink(config.fuelDataPath, function () {});
       });
     });
 
     afterEach(function () {
-      fs.unlink(process.env.FUEL_DATA_PATH, function () {});
+      fs.unlink(config.fuelDataPath, function () {});
     });
 
     it('should create a new file when not exists', function (done) {
@@ -22,11 +22,11 @@ describe('TestIndexController', function () {
       var fuelConsumption = createFuelConsumption();
       var req = { body: fuelConsumption };
       var res = createResponse();
-      var indexController = new IndexController(process.env);
+      var indexController = new IndexController(config);
       // ACT
       indexController.postFuelConsumption(req, res, function (err) {
         if (err) return done(err);
-        fs.readFile(process.env.FUEL_DATA_PATH, function (err, fileData) {
+        fs.readFile(config.fuelDataPath, function (err, fileData) {
           if (err) return done(err);
           // ASSERT
           var fuelConsumptionRecords = JSON.parse(fileData);
@@ -46,13 +46,13 @@ describe('TestIndexController', function () {
       var req0 = { body: fuelConsumption0 };
       var req1 = { body: fuelConsumption1 };
       var res = createResponse();
-      var indexController = new IndexController(process.env);
+      var indexController = new IndexController(config);
       // ACT
       indexController.postFuelConsumption(req0, res, function (err) {
         if (err) return done(err);
         indexController.postFuelConsumption(req1, res, function (err) {
           if (err) return done(err);
-          fs.readFile(process.env.FUEL_DATA_PATH, function (err, fileData) {
+          fs.readFile(config.fuelDataPath, function (err, fileData) {
             if (err) return done(err);
             // ASSERT
             var fuelConsumptionRecords = JSON.parse(fileData);

@@ -2,11 +2,10 @@
   "name": "fuelcost",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "SET ENVIRONMENT=dev & node ./api/index.js",
-    "nodemon": "nodemon ./api/index.js",
-    "test": "mocha tests/*.js"
+    "start": "SET ENVIRONMENT=dev& nodemon app.js",
+    "test": "SET ENVIRONMENT=test& mocha tests/*.js"
   },
   "author": "",
   "license": "ISC",

@@ -13,14 +13,14 @@ describe('UnitTest.TestFuelConsumptionAppender', function () {
     it('should assign properties', function () {
       // ARRANGE
       var fs = {};
-      var env = {};
+      var config = {};
 
       // ACT
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, env);
+      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
 
       // ASSERT
       assert.strictEqual(fuelConsumptionAppender.fs, fs);
-      assert.strictEqual(fuelConsumptionAppender.env, env);
+      assert.strictEqual(fuelConsumptionAppender.config, config);
     });
   });
 

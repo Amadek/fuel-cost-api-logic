@@ -4,10 +4,10 @@ var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 var createError = require('http-errors');
 
 var IndexController = (function () {
-  function IndexController (env) {
-    this.env = env;
+  function IndexController (config) {
+    this.config = config;
     this.fuelConsumptionParser = new FuelConsumptionParser();
-    this.fuelConsumptionAppender = new FuelConsumptionAppender(fs, env);
+    this.fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
   }
 
   IndexController.prototype.route = function (router) {
