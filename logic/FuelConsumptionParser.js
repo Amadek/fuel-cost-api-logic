@@ -3,8 +3,13 @@ var IFuelConsumption = require('./IFuelConsumption');
 var FuelConsumptionParser = (function () {
   function FuelConsumptionParser () {}
 
-  FuelConsumptionParser.prototype.parse = function (fuelConsumptionFromRequest) {
-    IFuelConsumption.ensureImplemented(fuelConsumptionFromRequest);
+  FuelConsumptionParser.prototype.parseFromRequest = function (fuelConsumptionFromRequest) {
+    try {
+      IFuelConsumption.ensureImplemented(fuelConsumptionFromRequest);
+    } catch {
+      return { success: false, message: 'Object does not have all required properties.' };
+    }
+
     var fuelConsumption = {};
     fuelConsumption.liters = parseFloat(fuelConsumptionFromRequest.liters);
     if (!fuelConsumption.liters) return { success: false, message: 'Parse error: liters' };
@@ -20,6 +25,24 @@ var FuelConsumptionParser = (function () {
       success: true,
       fuelConsumption: fuelConsumption
     };
+  };
+
+  FuelConsumptionParser.prototype.parseFromFile = function (fileData) {
+    try {
+      var fuelConsumptionRecords = JSON.parse(fileData);
+    } catch (err) {
+      return { success: false, message: 'Parse error: Failed to parse the file.' };
+    }
+    var parsedFuelConsumptionRecords = [];
+    var self = this;
+    fuelConsumptionRecords.forEach(function (record) {
+      var result = self.parseFromRequest(record);
+      if (!result.success) {
+        return result;
+      }
+      parsedFuelConsumptionRecords.push(result.fuelConsumption);
+    });
+    return { success: true, fuelConsumptionRecords: parsedFuelConsumptionRecords };
   };
 
   return FuelConsumptionParser;

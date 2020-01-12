@@ -19,12 +19,7 @@ var IndexController = (function () {
     var fuelConsumptionFromRequest = req.body;
     fuelConsumptionFromRequest.created = new Date();
 
-    try {
-      var parseResult = this.fuelConsumptionParser.parse(fuelConsumptionFromRequest);
-    } catch {
-      return next(createError(400, 'Failed to parse fuel consumption data.'));
-    }
-
+    var parseResult = this.fuelConsumptionParser.parseFromRequest(fuelConsumptionFromRequest);
     if (!parseResult.success) return next(createError(400, parseResult.message));
 
     this.fuelConsumptionAppender.appendFuelConsumption(parseResult.fuelConsumption, function (err) {
