@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "SET ENVIRONMENT=dev& nodemon app.js",
-    "test": "SET ENVIRONMENT=test& mocha tests/*.js",
-    "testlinux": "ENVIRONMENT=test& mocha tests/*.js"
+    "start": "nodemon app.js",
+    "test": "mocha tests/*.js",
+    "testlinux": "mocha tests/*.js"
   },
   "author": "",
   "license": "ISC",

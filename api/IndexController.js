@@ -1,7 +1,11 @@
 var fs = require('fs');
-var FuelConsumptionParser = require('../logic/FuelConsumptionParser'); 
+var FuelConsumptionParser = require('../logic/FuelConsumptionParser');
 var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 var createError = require('http-errors');
+var dotenv = require('dotenv');
+dotenv.config();
+
+console.log('env.azure = ' + process.env.AZURE);
 
 var IndexController = (function () {
   function IndexController (config) {
