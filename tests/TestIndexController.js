@@ -22,7 +22,8 @@ describe('TestIndexController', function () {
       var fuelConsumption = createFuelConsumption();
       var req = { body: fuelConsumption };
       var res = createResponse();
-      var indexController = new IndexController(config);
+      var appInsightsClient = createAppInsightsClient();
+      var indexController = new IndexController(config, appInsightsClient);
       // ACT
       indexController.postFuelConsumption(req, res, function (err) {
         if (err) return done(err);
@@ -46,7 +47,8 @@ describe('TestIndexController', function () {
       var req0 = { body: fuelConsumption0 };
       var req1 = { body: fuelConsumption1 };
       var res = createResponse();
-      var indexController = new IndexController(config);
+      var appInsightsClient = createAppInsightsClient();
+      var indexController = new IndexController(config, appInsightsClient);
       // ACT
       indexController.postFuelConsumption(req0, res, function (err) {
         if (err) return done(err);
@@ -81,5 +83,11 @@ function createResponse () {
   return {
     send: function () {},
     status: function () { return { end: function () {} }; }
+  };
+}
+
+function createAppInsightsClient () {
+  return {
+    trackEvent: function () {}
   };
 }

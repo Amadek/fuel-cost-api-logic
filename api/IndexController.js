@@ -4,20 +4,16 @@ var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 var createError = require('http-errors');
 
 var IndexController = (function () {
-  function IndexController (config) {
+  function IndexController (config, appInsightsClient) {
     this.config = config;
+    this.appInsightsClient = appInsightsClient;
     this.fuelConsumptionParser = new FuelConsumptionParser();
     this.fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
   }
 
   IndexController.prototype.route = function (router) {
     router.post('/fuelConsumption', this.postFuelConsumption.bind(this));
-    router.get('/', this.getStatus);
     return router;
-  };
-
-  IndexController.prototype.getStatus = function (req, res) {
-    res.send('Hello Azure from FuelCost!');
   };
 
   IndexController.prototype.postFuelConsumption = function (req, res, next) {
@@ -32,8 +28,10 @@ var IndexController = (function () {
 
     if (!parseResult.success) return next(createError(400, parseResult.message));
 
+    var self = this;
     this.fuelConsumptionAppender.appendFuelConsumption(parseResult.fuelConsumption, function (err) {
       if (err) return next(err);
+      self.appInsightsClient.trackEvent({ name: 'PostFuelConsumption', properties: { fuelConsumption: parseResult.fuelConsumption } });
       // Send status code 'Created'.
       res.status(201).end();
       next();

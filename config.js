@@ -2,11 +2,10 @@ require('dotenv').config();
 
 var config = {
   api: {
-    // We are using JSON.parse to parse string to bool value.
-    shouldRun: true,
     port: process.env.PORT
   },
-  fuelDataPath: 'output/FuelData.json'
+  appInsights: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
+  fuelDataPath: process.env.FUEL_DATA_PATH
 };
 
 module.exports = config;

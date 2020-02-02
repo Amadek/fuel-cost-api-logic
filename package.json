@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev-start": "nodemon index.js",
     "start": "node index.js",
     "test": "mocha tests/*.js",
     "testlinux": "mocha tests/*.js"
@@ -12,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@amadek/js-sdk": "^1.0.1",
+    "applicationinsights": "^1.7.0",
     "express": "^4.17.1",
     "http-errors": "^1.7.3"
   },

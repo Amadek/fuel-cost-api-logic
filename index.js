@@ -1,17 +1,14 @@
 var config = require('./config');
-var IApiLoader = require('./loaders/ILoader');
-var ApiLoader = require('./loaders/ApiLoader');
+var express = require('express');
+var IndexController = require('./api/IndexController');
+var app = express();
+var appInsights = require('applicationinsights');
+appInsights.setup(config.appInsights);
+appInsights.start();
 
-var loaders = [
-  new ApiLoader(config)
-];
+app.use(express.json());
+app.use(new IndexController(config, appInsights.defaultClient).route(express.Router()));
 
-// First check if all loaders implement interface.
-loaders.forEach(function (loader) {
-  IApiLoader.ensureImplemented(loader);
-});
-
-// Load all.
-loaders.forEach(function (loader) {
-  loader.load();
+app.listen(config.api.port, function () {
+  console.log('Listening on ' + config.api.port + '...');
 });
