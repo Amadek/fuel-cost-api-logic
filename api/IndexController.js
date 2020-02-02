@@ -2,10 +2,6 @@ var fs = require('fs');
 var FuelConsumptionParser = require('../logic/FuelConsumptionParser');
 var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 var createError = require('http-errors');
-var dotenv = require('dotenv');
-dotenv.config();
-
-console.log('env.azure = ' + process.env.AZURE);
 
 var IndexController = (function () {
   function IndexController (config) {
@@ -16,7 +12,12 @@ var IndexController = (function () {
 
   IndexController.prototype.route = function (router) {
     router.post('/fuelConsumption', this.postFuelConsumption.bind(this));
+    router.get('/', this.getStatus);
     return router;
+  };
+
+  IndexController.prototype.getStatus = function (req, res) {
+    res.send('Hello Azure from FuelCost!');
   };
 
   IndexController.prototype.postFuelConsumption = function (req, res, next) {

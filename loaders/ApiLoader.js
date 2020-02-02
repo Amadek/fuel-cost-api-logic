@@ -21,7 +21,7 @@ var ApiLoader = (function () {
 
     var self = this;
 
-    app.listen(this.config.api.port, function () {
+    app.listen(self.config.api.port, function () {
       console.log('Listening on ' + self.config.api.port + '...');
     });
   };
