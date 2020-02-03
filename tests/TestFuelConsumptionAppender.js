@@ -7,16 +7,23 @@ describe('UnitTest.TestFuelConsumptionAppender', function () {
     it('should reject nulls', function () {
       assert.throws(function () { FuelConsumptionAppender(); });
       assert.throws(function () { FuelConsumptionAppender({}); });
-      assert.doesNotThrow(function () { FuelConsumptionAppender({}, {}); });
+      assert.throws(function () { FuelConsumptionAppender({}, {}); });
+    });
+
+    it('should demand ILogger', function () {
+      assert.throws(function () { FuelConsumptionAppender({}, {}, {}); });
+      var logger = createLogger();
+      assert.doesNotThrow(function () { FuelConsumptionAppender({}, {}, logger); });
     });
 
     it('should assign properties', function () {
       // ARRANGE
       var fs = {};
       var config = {};
+      var logger = createLogger();
 
       // ACT
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
+      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config, logger);
 
       // ASSERT
       assert.strictEqual(fuelConsumptionAppender.fs, fs);
@@ -32,7 +39,8 @@ describe('UnitTest.TestFuelConsumptionAppender', function () {
         constants: { F_OK: 1 },
         access: function () {}
       };
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, {});
+      var logger = createLogger();
+      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, {}, logger);
 
       // ACT, ASSERT
       assert.throws(function () { fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () {}); });
@@ -56,7 +64,8 @@ describe('UnitTest.TestFuelConsumptionAppender', function () {
       var appendLineCounter = 0;
       var fs = { constants: { F_OK: 1 } };
       fs.access = function () { appendLineCounter++; };
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, {});
+      var logger = createLogger();
+      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, {}, logger);
 
       // ACT
       fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () {});
@@ -66,3 +75,11 @@ describe('UnitTest.TestFuelConsumptionAppender', function () {
     });
   });
 });
+
+function createLogger () {
+  return {
+    logEvent: function () {},
+    logException: function () {},
+    logTrace: function () {}
+  };
+}

@@ -22,10 +22,10 @@ describe('TestFuelConsumptionParser', function () {
       };
       var parser = new FuelConsumptionParser();
       // ACT
-      var result = parser.parse(fuelConsumptionFromRequest);
+      var success = parser.parse(fuelConsumptionFromRequest);
       // ASSERT
-      assert.strictEqual(result.success, true);
-      var fuelConsumption = result.fuelConsumption;
+      assert.strictEqual(success, true);
+      var fuelConsumption = parser.getResult();
       assert.strictEqual(fuelConsumption.liters, 45);
       assert.strictEqual(fuelConsumption.kilometers, 370);
       assert.strictEqual(fuelConsumption.fuelPrice, 2.37);
@@ -43,23 +43,23 @@ describe('TestFuelConsumptionParser', function () {
       var parser = new FuelConsumptionParser();
       // ACT, ASSERT
       // Invalid liters.
-      var result = parser.parse(fuelConsumptionFromRequest);
-      assert.strictEqual(false, result.success);
+      var success = parser.parse(fuelConsumptionFromRequest);
+      assert.strictEqual(success, false);
 
       // Invalid kilometers.
       fuelConsumptionFromRequest.liters = '42.5';
-      result = parser.parse(fuelConsumptionFromRequest);
-      assert.strictEqual(false, result.success);
+      success = parser.parse(fuelConsumptionFromRequest);
+      assert.strictEqual(success, false);
 
       // Invalid fuelPrice.
       fuelConsumptionFromRequest.kilometers = '377,8';
-      result = parser.parse(fuelConsumptionFromRequest);
-      assert.strictEqual(false, result.success);
+      success = parser.parse(fuelConsumptionFromRequest);
+      assert.strictEqual(success, false);
 
       // Correct data.
       fuelConsumptionFromRequest.fuelPrice = '2.37';
-      result = parser.parse(fuelConsumptionFromRequest);
-      assert.strictEqual(true, result.success);
+      success = parser.parse(fuelConsumptionFromRequest);
+      assert.strictEqual(success, true);
     });
   });
 });

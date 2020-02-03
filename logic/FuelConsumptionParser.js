@@ -7,19 +7,34 @@ var FuelConsumptionParser = (function () {
     IFuelConsumption.ensureImplemented(fuelConsumptionFromRequest);
     var fuelConsumption = {};
     fuelConsumption.liters = parseFloat(fuelConsumptionFromRequest.liters);
-    if (!fuelConsumption.liters) return { success: false, message: 'Parse error: liters' };
+    if (!fuelConsumption.liters) {
+      this.parseErrorPropertyName = 'liters';
+      return false;
+    }
 
     fuelConsumption.kilometers = parseFloat(fuelConsumptionFromRequest.kilometers);
-    if (!fuelConsumption.kilometers) return { success: false, message: 'Parse error: kilometers' };
+    if (!fuelConsumption.kilometers) {
+      this.parseErrorPropertyName = 'kilometers';
+      return false;
+    }
 
     fuelConsumption.fuelPrice = parseFloat(fuelConsumptionFromRequest.fuelPrice);
-    if (!fuelConsumption.fuelPrice) return { success: false, message: 'Parse error: fuelPrice' };
+    if (!fuelConsumption.fuelPrice) {
+      this.parseErrorPropertyName = 'fuelPrice';
+      return false;
+    }
 
     fuelConsumption.created = fuelConsumptionFromRequest.created;
-    return {
-      success: true,
-      fuelConsumption: fuelConsumption
-    };
+    this.fuelConsumption = fuelConsumption;
+    return true;
+  };
+
+  FuelConsumptionParser.prototype.getErrorMessage = function () {
+    return 'Parse error: ' + this.parseErrorPropertyName;
+  };
+
+  FuelConsumptionParser.prototype.getResult = function () {
+    return this.fuelConsumption;
   };
 
   return FuelConsumptionParser;
