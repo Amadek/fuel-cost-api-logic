@@ -2,16 +2,18 @@
   "name": "fuelcost",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "start": "SET ENVIRONMENT=dev& nodemon app.js",
-    "test": "SET ENVIRONMENT=test& mocha tests/*.js",
-    "testlinux": "ENVIRONMENT=test& mocha tests/*.js"
+    "dev-start": "nodemon index.js",
+    "start": "node index.js",
+    "test": "mocha tests/*.js",
+    "testlinux": "mocha tests/*.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@amadek/js-sdk": "^1.0.1",
+    "applicationinsights": "^1.7.0",
     "express": "^4.17.1",
     "http-errors": "^1.7.3"
   },

@@ -1,12 +1,16 @@
 var Ensure = require('@amadek/js-sdk/Ensure');
 var IFuelConsumption = require('./IFuelConsumption');
+var ILogger = require('./ILogger');
 
 var FuelConsumptionAppender = (function () {
-  function FuelConsumptionAppender (fs, config) {
+  function FuelConsumptionAppender (fs, config, logger) {
     Ensure.notNull(fs);
     Ensure.notNull(config);
+    Ensure.notNull(logger);
+    ILogger.ensureImplemented(logger);
     this.fs = fs;
     this.config = config;
+    this.logger = logger;
   }
 
   FuelConsumptionAppender.prototype.appendFuelConsumption = function (fuelConsumption, callback) {
@@ -28,7 +32,7 @@ var FuelConsumptionAppender = (function () {
         fuelConsumptionRecords = JSON.parse(fileData);
       } catch (err) {
         // If error occured, we only handle it and update file with only one record.
-        console.error(err);
+        this.logger.logTrace('Invalid file format. Saving file with only the newest record.');
       }
       fuelConsumptionRecords.push(fuelConsumption);
       this.fs.writeFile(this.config.fuelDataPath, JSON.stringify(fuelConsumptionRecords, null, 2), callback);
