@@ -1,5 +1,5 @@
-var Interface = require('@amadek/js-sdk/Interface');
+const Interface = require('@amadek/js-sdk/Interface');
 
-var ILogger = new Interface('ILogger', ['logEvent', 'logException', 'logTrace'], []);
+const ILogger = new Interface('ILogger', ['logEvent', 'logException', 'logTrace'], []);
 
 module.exports = ILogger;

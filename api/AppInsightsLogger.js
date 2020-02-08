@@ -1,24 +1,22 @@
-var Ensure = require('@amadek/js-sdk/Ensure');
+const Ensure = require('@amadek/js-sdk/Ensure');
 
-var AppInsightsLogger = (function () {
-  function AppInsightsLogger (appInsightsClient) {
+class AppInsightsLogger {
+  constructor (appInsightsClient) {
     Ensure.notNull(appInsightsClient);
     this.appInsightsClient = appInsightsClient;
   }
 
-  AppInsightsLogger.prototype.logEvent = function (name, properties) {
+  logEvent (name, properties) {
     this.appInsightsClient.trackEvent({ name: name, properties: properties });
-  };
+  }
 
-  AppInsightsLogger.prototype.logException = function (error) {
+  logException (error) {
     this.appInsightsClient.trackException({ exception: error });
-  };
+  }
 
-  AppInsightsLogger.prototype.logTrace = function (message) {
+  logTrace (message) {
     this.appInsightsClient.trackTrace({ message: message });
-  };
-
-  return AppInsightsLogger;
-}());
+  }
+}
 
 module.exports = AppInsightsLogger;
