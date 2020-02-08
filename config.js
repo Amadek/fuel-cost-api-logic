@@ -1,11 +1,23 @@
 require('dotenv').config();
 
-var config = {
-  api: {
-    port: process.env.PORT
+const config = {
+  development: {
+    api: {
+      port: 3000
+    },
+    appInsights: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
+    fuelDataPath: 'output/FuelData.json'
   },
-  appInsights: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
-  fuelDataPath: process.env.FUEL_DATA_PATH
+  testing: {
+    fuelDataPath: 'output/FuelData.json'
+  },
+  production: {
+    api: {
+      port: process.env.PORT
+    },
+    appInsights: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
+    fuelDataPath: 'output/FuelData.json'
+  }
 };
 
 module.exports = config;

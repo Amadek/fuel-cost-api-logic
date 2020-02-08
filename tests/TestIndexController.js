@@ -1,69 +1,70 @@
 /* global describe, it, before, afterEach */
-var config = require('../config');
-var assert = require('assert');
-var fs = require('fs');
-var path = require('path');
-var IndexController = require('../api/IndexController');
+const config = require('../config')[process.env.NODE_ENV];
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const IndexController = require('../api/IndexController');
 
-describe('TestIndexController', function () {
-  describe('postFuelConsumption', function () {
-    before(function () {
-      fs.mkdir(path.dirname(config.fuelDataPath), function () {
-        fs.unlink(config.fuelDataPath, function () {});
-      });
-    });
+console.log(process.env.NODE_ENV);
 
-    afterEach(function () {
-      fs.unlink(config.fuelDataPath, function () {});
-    });
+describe('TestIndexController', () => {
+  describe('postFuelConsumption', () => {
+    before(() => fs.promises.mkdir(path.dirname(config.fuelDataPath), { recursive: true }));
 
-    it('should create a new file when not exists', function (done) {
+    afterEach(() => fs.promises.unlink(config.fuelDataPath));
+
+    it('should create a new file when not exists', done => {
       // ARRANGE
-      var fuelConsumption = createFuelConsumption();
-      var req = { body: fuelConsumption };
-      var res = createResponse();
-      var logger = createLogger();
-      var indexController = new IndexController(config, logger);
+      const fuelConsumption = createFuelConsumption();
+      const req = { body: fuelConsumption };
+      const res = createResponse();
+      const logger = createLogger();
+      const indexController = new IndexController(config, logger);
       // ACT
       indexController.postFuelConsumption(req, res, function (err) {
         if (err) return done(err);
-        fs.readFile(config.fuelDataPath, function (err, fileData) {
-          if (err) return done(err);
-          // ASSERT
-          var fuelConsumptionRecords = JSON.parse(fileData);
-          assert.strictEqual(fuelConsumptionRecords.length, 1);
-          assert.strictEqual(fuelConsumptionRecords[0].liters, fuelConsumption.liters);
-          assert.strictEqual(fuelConsumptionRecords[0].kilometers, fuelConsumption.kilometers);
-          assert.strictEqual(fuelConsumptionRecords[0].fuelPrice, fuelConsumption.fuelPrice);
-          done();
-        });
+
+        fs.promises.readFile(config.fuelDataPath)
+          .then(fileData => {
+            // ASSERT
+            const fuelConsumptionRecords = JSON.parse(fileData);
+            assert.strictEqual(fuelConsumptionRecords.length, 1);
+            assert.strictEqual(fuelConsumptionRecords[0].liters, fuelConsumption.liters);
+            assert.strictEqual(fuelConsumptionRecords[0].kilometers, fuelConsumption.kilometers);
+            assert.strictEqual(fuelConsumptionRecords[0].fuelPrice, fuelConsumption.fuelPrice);
+          })
+          .then(done)
+          .catch(done);
       });
     });
 
-    it('should append file when exists', function (done) {
+    it('should append file when exists', done => {
       // ARRANGE
-      var fuelConsumption0 = createFuelConsumption();
-      var fuelConsumption1 = createFuelConsumption();
-      var req0 = { body: fuelConsumption0 };
-      var req1 = { body: fuelConsumption1 };
-      var res = createResponse();
-      var logger = createLogger();
-      var indexController = new IndexController(config, logger);
+      const fuelConsumption0 = createFuelConsumption();
+      const fuelConsumption1 = createFuelConsumption();
+      const req0 = { body: fuelConsumption0 };
+      const req1 = { body: fuelConsumption1 };
+      const res = createResponse();
+      const logger = createLogger();
+      const indexController = new IndexController(config, logger);
       // ACT
       indexController.postFuelConsumption(req0, res, function (err) {
         if (err) return done(err);
+
         indexController.postFuelConsumption(req1, res, function (err) {
           if (err) return done(err);
-          fs.readFile(config.fuelDataPath, function (err, fileData) {
-            if (err) return done(err);
-            // ASSERT
-            var fuelConsumptionRecords = JSON.parse(fileData);
-            assert.strictEqual(fuelConsumptionRecords.length, 2);
-            assert.strictEqual(fuelConsumptionRecords[1].liters, fuelConsumption1.liters);
-            assert.strictEqual(fuelConsumptionRecords[1].kilometers, fuelConsumption1.kilometers);
-            assert.strictEqual(fuelConsumptionRecords[1].fuelPrice, fuelConsumption1.fuelPrice);
-            done();
-          });
+
+          fs.promises.readFile(config.fuelDataPath)
+            .then(fileData => {
+              // ASSERT
+              const fuelConsumptionRecords = JSON.parse(fileData);
+              assert.strictEqual(fuelConsumptionRecords.length, 2);
+              assert.strictEqual(fuelConsumptionRecords[1].liters, fuelConsumption1.liters);
+              assert.strictEqual(fuelConsumptionRecords[1].kilometers, fuelConsumption1.kilometers);
+              assert.strictEqual(fuelConsumptionRecords[1].fuelPrice, fuelConsumption1.fuelPrice);
+            })
+            .then(done)
+            .catch(done);
         });
       });
     });
@@ -81,15 +82,15 @@ function createFuelConsumption () {
 
 function createResponse () {
   return {
-    send: function () {},
-    status: function () { return { end: function () {} }; }
+    send: () => {},
+    status: () => { return { end: () => {} }; }
   };
 }
 
 function createLogger () {
   return {
-    logEvent: function () {},
-    logException: function () {},
-    logTrace: function () {}
+    logEvent: () => {},
+    logException: () => {},
+    logTrace: () => {}
   };
 }

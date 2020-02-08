@@ -1,43 +1,43 @@
-var IFuelConsumption = require('./IFuelConsumption');
+const IFuelConsumption = require('./IFuelConsumption');
 
-var FuelConsumptionParser = (function () {
-  function FuelConsumptionParser () {}
+class FuelConsumptionParser {
+  get errorMessage () { return 'Parse error: ' + this._errorMessage; }
 
-  FuelConsumptionParser.prototype.parse = function (fuelConsumptionFromRequest) {
-    IFuelConsumption.ensureImplemented(fuelConsumptionFromRequest);
-    var fuelConsumption = {};
-    fuelConsumption.liters = parseFloat(fuelConsumptionFromRequest.liters);
+  get result () { return this._fuelConsumption; }
+
+  constructor (fuelConsumptionFromRequest) {
+    this._fuelConsumption = fuelConsumptionFromRequest;
+  }
+
+  parse () {
+    if (!IFuelConsumption.isImplemented(this._fuelConsumption)) {
+      this._errorMessage = 'not all required properties';
+      return false;
+    }
+
+    const fuelConsumption = {};
+    fuelConsumption.liters = parseFloat(this._fuelConsumption.liters);
     if (!fuelConsumption.liters) {
-      this.parseErrorPropertyName = 'liters';
+      this._errorMessage = 'invalid liters';
       return false;
     }
 
-    fuelConsumption.kilometers = parseFloat(fuelConsumptionFromRequest.kilometers);
+    fuelConsumption.kilometers = parseFloat(this._fuelConsumption.kilometers);
     if (!fuelConsumption.kilometers) {
-      this.parseErrorPropertyName = 'kilometers';
+      this._errorMessage = 'invalid kilometers';
       return false;
     }
 
-    fuelConsumption.fuelPrice = parseFloat(fuelConsumptionFromRequest.fuelPrice);
+    fuelConsumption.fuelPrice = parseFloat(this._fuelConsumption.fuelPrice);
     if (!fuelConsumption.fuelPrice) {
-      this.parseErrorPropertyName = 'fuelPrice';
+      this._errorMessage = 'invalid fuelPrice';
       return false;
     }
 
-    fuelConsumption.created = fuelConsumptionFromRequest.created;
-    this.fuelConsumption = fuelConsumption;
+    fuelConsumption.created = this._fuelConsumption.created;
+    this._fuelConsumption = fuelConsumption;
     return true;
-  };
-
-  FuelConsumptionParser.prototype.getErrorMessage = function () {
-    return 'Parse error: ' + this.parseErrorPropertyName;
-  };
-
-  FuelConsumptionParser.prototype.getResult = function () {
-    return this.fuelConsumption;
-  };
-
-  return FuelConsumptionParser;
-}());
+  }
+}
 
 module.exports = FuelConsumptionParser;
