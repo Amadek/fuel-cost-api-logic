@@ -1,15 +1,12 @@
 name: build
 
 on:
-  push:
-    branches: 
-      - master
   pull_request:
     branches: 
       - master
 
 jobs:
-  build:
+  validation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
