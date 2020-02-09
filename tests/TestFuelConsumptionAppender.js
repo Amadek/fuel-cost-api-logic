@@ -1,68 +1,75 @@
 /* global describe, it */
-var assert = require('assert');
-var FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
+const assert = require('assert');
+const FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 
-describe('UnitTest.TestFuelConsumptionAppender', function () {
-  describe('ctor', function () {
-    it('should reject nulls', function () {
-      assert.throws(function () { FuelConsumptionAppender(); });
-      assert.throws(function () { FuelConsumptionAppender({}); });
-      assert.doesNotThrow(function () { FuelConsumptionAppender({}, {}); });
+describe('TestFuelConsumptionAppender', () => {
+  describe('ctor', () => {
+    it('should reject nulls', () => {
+      assert.throws(() => new FuelConsumptionAppender());
+      assert.throws(() => new FuelConsumptionAppender({}));
+      assert.throws(() => new FuelConsumptionAppender({}, {}));
     });
 
-    it('should assign properties', function () {
-      // ARRANGE
-      var fs = {};
-      var config = {};
-
-      // ACT
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, config);
-
-      // ASSERT
-      assert.strictEqual(fuelConsumptionAppender.fs, fs);
-      assert.strictEqual(fuelConsumptionAppender.config, config);
+    it('should demand ILogger', () => {
+      assert.throws(() => new FuelConsumptionAppender({}, {}, {}));
+      const logger = createLogger();
+      assert.doesNotThrow(() => new FuelConsumptionAppender({}, {}, logger));
     });
   });
 
-  describe('appendFuelConsumption', function () {
-    it('should ensure IFuelConsumption', function () {
+  describe('appendFuelConsumption', () => {
+    it('should ensure IFuelConsumption', () => {
       // ARRANGE
-      var fuelConsumption = { };
-      var fs = {
-        constants: { F_OK: 1 },
-        access: function () {}
-      };
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, {});
+      let fuelConsumption = {};
+      const fs = createFs();
+      const logger = createLogger();
+      const fuelConsumptionAppender = new FuelConsumptionAppender(fs, {}, logger);
 
       // ACT, ASSERT
-      assert.throws(function () { fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () {}); });
+      assert.throws(() => fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, () => {}));
       fuelConsumption = {
         liters: 45,
         kilometers: 300,
         fuelPrice: 2,
         created: new Date()
       };
-      assert.doesNotThrow(function () { fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () {}); });
+      assert.doesNotThrow(() => fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, () => {}));
     });
 
-    it('should use fs.access', function () {
+    it('should use fs.open', () => {
       // ARRANGE
-      var fuelConsumption = {
+      const fuelConsumption = {
         liters: 45,
         kilometers: 300,
         fuelPrice: 2,
         created: new Date()
       };
-      var appendLineCounter = 0;
-      var fs = { constants: { F_OK: 1 } };
-      fs.access = function () { appendLineCounter++; };
-      var fuelConsumptionAppender = new FuelConsumptionAppender(fs, {});
+      let fsOpenCounter = 0;
+      const fs = createFs();
+      fs.promises.open = () => new Promise(() => fsOpenCounter++);
+      const logger = createLogger();
+      const fuelConsumptionAppender = new FuelConsumptionAppender(fs, {}, logger);
 
       // ACT
-      fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, function () {});
+      fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, () => {});
 
       // ASSERT
-      assert.strictEqual(appendLineCounter, 1);
+      assert.strictEqual(fsOpenCounter, 1);
     });
   });
 });
+
+function createLogger () {
+  return {
+    logEvent: () => {},
+    logException: () => {},
+    logTrace: () => {}
+  };
+}
+
+function createFs () {
+  return {
+    constants: {},
+    promises: { open: () => new Promise(() => {}) }
+  };
+}

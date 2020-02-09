@@ -1,33 +1,45 @@
-var IFuelConsumption = require('./IFuelConsumption');
+const IFuelConsumption = require('./IFuelConsumption');
 
-var FuelConsumptionParser = (function () {
-  function FuelConsumptionParser () {}
+class FuelConsumptionParser {
+  get errorMessage () { return 'Parse error: ' + this._errorMessage; }
 
-  FuelConsumptionParser.prototype.parseFromRequest = function (fuelConsumptionFromRequest) {
-    try {
-      IFuelConsumption.ensureImplemented(fuelConsumptionFromRequest);
-    } catch {
-      return { success: false, message: 'Object does not have all required properties.' };
+  get result () { return this._fuelConsumption; }
+
+  constructor (fuelConsumptionFromRequest) {
+    this._fuelConsumption = fuelConsumptionFromRequest;
+  }
+
+  parse () {
+    if (!IFuelConsumption.isImplemented(this._fuelConsumption)) {
+      this._errorMessage = 'not all required properties';
+      return false;
     }
 
-    var fuelConsumption = {};
-    fuelConsumption.liters = parseFloat(fuelConsumptionFromRequest.liters);
-    if (!fuelConsumption.liters) return { success: false, message: 'Parse error: liters' };
+    const fuelConsumption = {};
+    fuelConsumption.liters = parseFloat(this._fuelConsumption.liters);
+    if (!fuelConsumption.liters) {
+      this._errorMessage = 'invalid liters';
+      return false;
+    }
 
-    fuelConsumption.kilometers = parseFloat(fuelConsumptionFromRequest.kilometers);
-    if (!fuelConsumption.kilometers) return { success: false, message: 'Parse error: kilometers' };
+    fuelConsumption.kilometers = parseFloat(this._fuelConsumption.kilometers);
+    if (!fuelConsumption.kilometers) {
+      this._errorMessage = 'invalid kilometers';
+      return false;
+    }
 
-    fuelConsumption.fuelPrice = parseFloat(fuelConsumptionFromRequest.fuelPrice);
-    if (!fuelConsumption.fuelPrice) return { success: false, message: 'Parse error: fuelPrice' };
+    fuelConsumption.fuelPrice = parseFloat(this._fuelConsumption.fuelPrice);
+    if (!fuelConsumption.fuelPrice) {
+      this._errorMessage = 'invalid fuelPrice';
+      return false;
+    }
 
-    fuelConsumption.created = fuelConsumptionFromRequest.created;
-    return {
-      success: true,
-      fuelConsumption: fuelConsumption
-    };
-  };
+    fuelConsumption.created = this._fuelConsumption.created;
+    this._fuelConsumption = fuelConsumption;
+    return true;
+  }
 
-  FuelConsumptionParser.prototype.parseFromFile = function (fileData) {
+  parseFromFile (fileData) {
     try {
       var fuelConsumptionRecords = JSON.parse(fileData);
     } catch (err) {
@@ -43,9 +55,7 @@ var FuelConsumptionParser = (function () {
       parsedFuelConsumptionRecords.push(result.fuelConsumption);
     });
     return { success: true, fuelConsumptionRecords: parsedFuelConsumptionRecords };
-  };
-
-  return FuelConsumptionParser;
-}());
+  }
+}
 
 module.exports = FuelConsumptionParser;
