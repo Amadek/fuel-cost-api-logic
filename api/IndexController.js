@@ -33,8 +33,8 @@ class IndexController {
         this._logger.logEvent('PostFuelConsumption', { fuelConsumption: fuelConsumptionParser.result });
         // Send status code 'Created'.
         res.status(201).end();
-        next();
       })
+      .then(next)
       .catch(next);
   }
 }
