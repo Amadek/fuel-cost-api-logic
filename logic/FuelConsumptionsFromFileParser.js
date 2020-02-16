@@ -14,7 +14,6 @@ class FuelConsumptionsFromFileParser {
 
   parse () {
     return Promise.resolve()
-      .then(() => this._fs.promises.access(this._fuelDataPath, this._fs.constants.R_OK))
       .then(() => this._fs.promises.readFile(this._fuelDataPath, { encoding: 'utf8' }))
       .then(fileData => {
         const fuelConsumptionRecords = this._parseFileData(fileData);
