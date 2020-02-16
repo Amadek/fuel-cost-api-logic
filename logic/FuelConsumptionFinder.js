@@ -1,32 +1,21 @@
-var Ensure = require('@amadek/js-sdk/Ensure');
+const Ensure = require('@amadek/js-sdk/Ensure');
+const ILogger = require('./ILogger');
+const FuelConsumptionsFromFileParser = require('./FuelConsumptionsFromFileParser');
 
-var FuelConsumptionFinder = (function () {
-  function FuelConsumptionFinder (fuelConsumptionParser, fs, config) {
-    Ensure.notNull(fuelConsumptionParser);
+class FuelConsumptionFinder {
+  constructor (fs, config, logger) {
     Ensure.notNull(fs);
     Ensure.notNull(config);
-    this.fuelConsumptionParser = fuelConsumptionParser;
-    this.fs = fs;
-    this.config = config;
+    ILogger.ensureImplemented(logger);
+    this._fs = fs;
+    this._config = config;
+    this._logger = logger;
   }
 
-  FuelConsumptionFinder.prototype.getAll = function (callback) {
-    this.fs.readFile(this.config.fuelDataPath, onFileReaded.bind(this));
-
-    function onFileReaded (err, fileData) {
-      if (err) return callback(err);
-
-      var fuelConsumptionRecords = [];
-      try {
-        fuelConsumptionRecords = JSON.parse(fileData);
-      } catch (err) {
-        // If error occured, we only pass it to callback.
-        return callback(err);
-      }
-
-      return callback(null, fuelConsumptionRecords);
-    }
-  };
-}());
+  getAll () {
+    const fileParser = new FuelConsumptionsFromFileParser(this._fs, this._config.fuelDataPath, this._logger);
+    return fileParser.parse();
+  }
+}
 
 module.exports = FuelConsumptionFinder;

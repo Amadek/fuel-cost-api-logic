@@ -1,44 +1,70 @@
 const Ensure = require('@amadek/js-sdk/Ensure');
+const ILogger = require('./ILogger');
 const FuelConsumptionParser = require('./FuelConsumptionParser');
 
 class FuelConsumptionsFromFileParser {
-  get errorMessage () { return this._errorMessage; }
-
-  get result () { return this._fuelConsumptions; }
-
-  constructor (fileData) {
-    Ensure.typeOf('', fileData);
-    this._fileData = fileData;
+  constructor (fs, fuelDataPath, logger) {
+    Ensure.notNull(fs);
+    Ensure.typeOf('', fuelDataPath);
+    ILogger.ensureImplemented(logger);
+    this._fs = fs;
+    this._fuelDataPath = fuelDataPath;
+    this._logger = logger;
   }
 
   parse () {
+    return Promise.resolve()
+      .then(() => this._fs.promises.access(this._fuelDataPath, this._fs.constants.R_OK))
+      .then(() => this._fs.promises.readFile(this._fuelDataPath, { encoding: 'utf8' }))
+      .then(fileData => {
+        const fuelConsumptionRecords = this._parseFileData(fileData);
+        const [fuelConsumptions, objectsWithError] = this._parseFuelConsumptionRecords(fuelConsumptionRecords);
+
+        if (objectsWithError.length > 0) {
+          this._logger.logEvent('Failed to parse objects from file', objectsWithError);
+        }
+
+        return fuelConsumptions;
+      })
+      .catch(err => {
+        if (err.code !== 'ENOENT') throw err;
+        this._logger.logEvent(`Could not access to the ${this._fuelDataPath}.`);
+        return [];
+      });
+  }
+
+  _parseFileData (fileData) {
+    // Try parse from file.
     let fuelConsumptionRecords = [];
     try {
-      fuelConsumptionRecords = JSON.parse(this._fileData);
+      fuelConsumptionRecords = JSON.parse(fileData);
     } catch {
-      this._errorMessage = 'Failed to parse object from file.';
-      return false;
+      this._logger.logEvent('Failed to parse object from file.');
     }
+    return fuelConsumptionRecords;
+  }
 
-    if (!Array.isArray(fuelConsumptionRecords)) {
-      this._errorMessage = 'Parsed object is not an array.';
-      return false;
-    }
-
+  _parseFuelConsumptionRecords (fuelConsumptionRecords) {
     const fuelConsumptions = [];
-    let i = 0;
-    for (const record of fuelConsumptionRecords) {
-      const fuelConsumptionParser = new FuelConsumptionParser(record);
+    const objectsWithError = [];
+
+    for (let i = 0; i < fuelConsumptionRecords.length; i++) {
+      // Try parse JSON to FuelConsumption.
+      const fuelConsumptionParser = new FuelConsumptionParser(fuelConsumptionRecords[i]);
+      // If parse failed, add object to an array for error message.
       if (!fuelConsumptionParser.parse()) {
-        this._errorMessage = `Object no. ${i}: ${fuelConsumptionParser._errorMessage}`;
-        return false;
+        objectsWithError.push({
+          number: i,
+          object: fuelConsumptionRecords[i],
+          errorMessage: fuelConsumptionParser.errorMessage
+        });
+        continue;
       }
+      // If success add parsed object to an array for result.
       fuelConsumptions.push(fuelConsumptionParser.result);
-      i++;
     }
 
-    this._fuelConsumptions = fuelConsumptions;
-    return true;
+    return [fuelConsumptions, objectsWithError];
   }
 }
 

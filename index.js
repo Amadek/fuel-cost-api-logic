@@ -11,4 +11,5 @@ const logger = new AppInsightsLogger(appInsights.defaultClient);
 
 app.use(express.json());
 app.use(new IndexController(config, logger).route(express.Router()));
+app.use((req, res, next) => res.status(404).end());
 app.listen(config.api.port);

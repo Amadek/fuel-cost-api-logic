@@ -17,7 +17,7 @@ class FuelConsumptionAppender {
 
     // File opened for reading and writing. Created if not exists.
     return this._fs.promises.open(this._config.fuelDataPath, this._fs.constants.R_OK | this._fs.constants.W_OK)
-      .then(() => this._fs.promises.readFile(this._config.fuelDataPath))
+      .then(() => this._fs.promises.readFile(this._config.fuelDataPath, { encoding: 'utf8' }))
       .then(fileData => {
         const fuelConsumptionRecords = JSON.parse(fileData);
         if (!Array.isArray(fuelConsumptionRecords)) throw new Error('Parsed object is not an array.');
