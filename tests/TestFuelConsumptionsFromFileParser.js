@@ -113,7 +113,6 @@ function createFs (fileData) {
   return {
     constants: {},
     promises: {
-      access: () => Promise.resolve(),
       readFile: () => Promise.resolve(fileData)
     }
   };
