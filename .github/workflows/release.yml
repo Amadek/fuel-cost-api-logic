@@ -1,0 +1,30 @@
+name: release
+
+on:
+  push:	
+    branches: 	
+      - master
+
+jobs:
+  buid:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - name: Install and test
+        run: |
+          npm ci
+          npm test
+      - name: Check if version has been updated
+        id: check
+        uses: EndBug/version-check@v1
+      - name: Log when changed
+        if: steps.check.outputs.changed == 'true'
+        run: 'echo "Version change found! New version: ${{ steps.check.outputs.version }} (${{ steps.chech.outputs.type }})"'
+      - name: Log when unchanged
+        if: steps.check.outputs.changed != 'true'
+        run: 'echo "No version change."'

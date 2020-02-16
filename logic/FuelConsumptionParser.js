@@ -5,36 +5,36 @@ class FuelConsumptionParser {
 
   get result () { return this._fuelConsumption; }
 
-  constructor (fuelConsumptionFromRequest) {
-    this._fuelConsumption = fuelConsumptionFromRequest;
+  constructor (fuelConsumptionFromJSON) {
+    this._fuelConsumptionFromJSON = fuelConsumptionFromJSON;
   }
 
   parse () {
-    if (!IFuelConsumption.isImplemented(this._fuelConsumption)) {
+    if (!IFuelConsumption.isImplemented(this._fuelConsumptionFromJSON)) {
       this._errorMessage = 'not all required properties';
       return false;
     }
 
     const fuelConsumption = {};
-    fuelConsumption.liters = parseFloat(this._fuelConsumption.liters);
+    fuelConsumption.liters = parseFloat(this._fuelConsumptionFromJSON.liters);
     if (!fuelConsumption.liters) {
       this._errorMessage = 'invalid liters';
       return false;
     }
 
-    fuelConsumption.kilometers = parseFloat(this._fuelConsumption.kilometers);
+    fuelConsumption.kilometers = parseFloat(this._fuelConsumptionFromJSON.kilometers);
     if (!fuelConsumption.kilometers) {
       this._errorMessage = 'invalid kilometers';
       return false;
     }
 
-    fuelConsumption.fuelPrice = parseFloat(this._fuelConsumption.fuelPrice);
+    fuelConsumption.fuelPrice = parseFloat(this._fuelConsumptionFromJSON.fuelPrice);
     if (!fuelConsumption.fuelPrice) {
       this._errorMessage = 'invalid fuelPrice';
       return false;
     }
 
-    fuelConsumption.created = this._fuelConsumption.created;
+    fuelConsumption.created = this._fuelConsumptionFromJSON.created;
     this._fuelConsumption = fuelConsumption;
     return true;
   }

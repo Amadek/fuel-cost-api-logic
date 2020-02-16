@@ -7,14 +7,18 @@ class AppInsightsLogger {
   }
 
   logEvent (name, properties) {
+    Ensure.typeOf('', name);
+    properties = properties || {};
     this.appInsightsClient.trackEvent({ name: name, properties: properties });
   }
 
   logException (error) {
+    Ensure.notNull(error);
     this.appInsightsClient.trackException({ exception: error });
   }
 
   logTrace (message) {
+    Ensure.typeOf('', message);
     this.appInsightsClient.trackTrace({ message: message });
   }
 }
