@@ -2,13 +2,10 @@ const config = require('./config')[process.env.NODE_ENV];
 const express = require('express');
 const helmet = require('helmet');
 const IndexController = require('./api/IndexController');
-const AppInsightsLogger = require('./api/AppInsightsLogger');
+const DummyLogger = require('./api/DummyLogger');
 const app = express();
-const appInsights = require('applicationinsights');
-appInsights.setup(config.appInsights);
-appInsights.start();
 
-const logger = new AppInsightsLogger(appInsights.defaultClient);
+const logger = new DummyLogger();
 
 app.use(helmet());
 app.use(express.json());
