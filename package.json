@@ -2,11 +2,15 @@
   "name": "fuelcost",
   "version": "0.0.2",
   "description": "Project aims to store fuel consumption of your car in easy way by simple API.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Amadek/fuel-cost.git"
+  },
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "cross-env NODE_ENV=development nodemon index.js",
-    "test": "cross-env NODE_ENV=testing mocha tests/*.js",
+    "start": "cross-env NODE_ENV=production node src/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon src/index.js",
+    "test": "cross-env NODE_ENV=testing mocha src/tests/*.js",
     "testlinux": "mocha tests/*.js"
   },
   "author": "Amadek",
