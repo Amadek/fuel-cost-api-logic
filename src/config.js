@@ -1,23 +1,11 @@
-require('dotenv').config();
 
-const config = {
-  development: {
-    api: {
-      port: 3000
-    },
-    appInsights: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
-    fuelDataPath: 'output/FuelData.json'
+module.exports = {
+  api: {
+    port: process.env.PORT
   },
-  testing: {
-    fuelDataPath: 'output/FuelData.json'
-  },
-  production: {
-    api: {
-      port: process.env.PORT
-    },
-    appInsights: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
-    fuelDataPath: 'output/FuelData.json'
+  appInsights: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
+  mongodb: {
+    url: process.env.MONGO_URL,
+    dbName: process.env.MONGO_DB_NAME
   }
 };
-
-module.exports = config;

@@ -1,14 +1,16 @@
-const config = require('./config')[process.env.NODE_ENV];
+const config = require('./config');
 const express = require('express');
 const helmet = require('helmet');
-const IndexController = require('./api/IndexController');
 const DummyLogger = require('./api/DummyLogger');
+const DbConnector = require('./logic/DbConnector');
+const FuelConsumptionController = require('./api/FuelConsumptionController');
 const app = express();
 
 const logger = new DummyLogger();
+const dbConnector = new DbConnector(config);
 
 app.use(helmet());
 app.use(express.json());
-app.use(new IndexController(config, logger).route(express.Router()));
+app.use('/fuelConsumption', new FuelConsumptionController(dbConnector, config, logger).route(express.Router()));
 app.use((req, res, next) => res.status(404).end());
 app.listen(config.api.port);

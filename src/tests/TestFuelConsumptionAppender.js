@@ -11,9 +11,9 @@ describe('TestFuelConsumptionAppender', () => {
     });
 
     it('should demand ILogger', () => {
-      assert.throws(() => new FuelConsumptionAppender({}, {}, {}));
+      assert.throws(() => new FuelConsumptionAppender({}, {}));
       const logger = createLogger();
-      assert.doesNotThrow(() => new FuelConsumptionAppender({}, {}, logger));
+      assert.doesNotThrow(() => new FuelConsumptionAppender({}, logger));
     });
   });
 
@@ -21,40 +21,19 @@ describe('TestFuelConsumptionAppender', () => {
     it('should ensure IFuelConsumption', () => {
       // ARRANGE
       let fuelConsumption = {};
-      const fs = createFs();
+      const db = createDb();
       const logger = createLogger();
-      const fuelConsumptionAppender = new FuelConsumptionAppender(fs, {}, logger);
+      const fuelConsumptionAppender = new FuelConsumptionAppender(db, logger);
 
       // ACT, ASSERT
-      assert.throws(() => fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, () => {}));
+      assert.throws(() => fuelConsumptionAppender.append(fuelConsumption));
       fuelConsumption = {
         liters: 45,
         kilometers: 300,
         fuelPrice: 2,
         created: new Date()
       };
-      assert.doesNotThrow(() => fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, () => {}));
-    });
-
-    it('should use fs.open', () => {
-      // ARRANGE
-      const fuelConsumption = {
-        liters: 45,
-        kilometers: 300,
-        fuelPrice: 2,
-        created: new Date()
-      };
-      let fsOpenCounter = 0;
-      const fs = createFs();
-      fs.promises.open = () => new Promise(() => fsOpenCounter++);
-      const logger = createLogger();
-      const fuelConsumptionAppender = new FuelConsumptionAppender(fs, {}, logger);
-
-      // ACT
-      fuelConsumptionAppender.appendFuelConsumption(fuelConsumption, () => {});
-
-      // ASSERT
-      assert.strictEqual(fsOpenCounter, 1);
+      assert.doesNotThrow(() => fuelConsumptionAppender.append(fuelConsumption));
     });
   });
 });
@@ -67,9 +46,10 @@ function createLogger () {
   };
 }
 
-function createFs () {
+function createDb () {
   return {
-    constants: {},
-    promises: { open: () => new Promise(() => {}) }
+    collection: () => ({
+      insertOne: () => {}
+    })
   };
 }
