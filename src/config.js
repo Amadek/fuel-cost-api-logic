@@ -1,7 +1,13 @@
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = {
   api: {
-    port: process.env.PORT
+    port: process.env.PORT,
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET
+    }
   },
   appInsights: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
   mongodb: {
