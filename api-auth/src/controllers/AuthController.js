@@ -1,5 +1,6 @@
 const Ensure = require('@amadek/js-sdk/Ensure');
 const axios = require('axios').default;
+const createError = require('http-errors');
 
 class AuthController {
   constructor (config) {
@@ -19,7 +20,7 @@ class AuthController {
       url: 'https://github.com/login/oauth/authorize',
       params: {
         client_id: this._config.api.github.clientId,
-        redirect_url: 'http://localhost:3000/auth/redirect'
+        redirect_url: this._getBaseUrl(req) + '/redirect'
       }
     });
 
@@ -27,6 +28,9 @@ class AuthController {
   }
 
   getAuthRedirect (req, res, next) {
+    // If code aka request token not provided, throw Bad Request.
+    if (!req.query.code) throw createError(400);
+
     const requestToken = req.query.code;
 
     Promise.resolve()
@@ -44,18 +48,20 @@ class AuthController {
       }))
       .then(response => response.data.access_token)
       .then(accessToken => axios({
-        method: 'get',
-        url: 'https://api.github.com/user',
-        headers: {
-          Authorization: 'token ' + accessToken,
-          accept: 'application/json'
+        method: 'put',
+        url: this._config.api.putTokenUrl,
+        params: {
+          client_secret: this._config.api.github.clientSecret,
+          token: accessToken
         }
       }))
-      .then(response => {
-        res.send(`Hello ${response.data.login} from GitHub!`);
-      })
+      .then(() => res.send('Authorised.'))
       .then(next)
       .catch(next);
+  }
+
+  _getBaseUrl (req) {
+    return req.headers.host + req.baseUrl;
   }
 }
 
