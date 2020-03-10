@@ -6,7 +6,8 @@ fuel-cost-api-auth:
     - '8181:8181'
   volumes:
     - ./api-auth:/app
-  environment: 
+  environment:
+    - NODE_ENV=development
     - PORT=8181
     - PUT_TOKEN_URL=http://fuel-cost-api:3000/token
 

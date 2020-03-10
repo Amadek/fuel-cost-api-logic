@@ -13,6 +13,6 @@ const dbConnector = new DbConnector(config);
 app.use(helmet());
 app.use(express.json());
 app.use('/fuelConsumption', new FuelConsumptionController(dbConnector, config, logger).route(express.Router()));
-app.use('/token', new TokenController().route(express.Router()));
+app.use('/token', new TokenController(dbConnector, config).route(express.Router()));
 app.use((req, res, next) => res.status(404).end());
 app.listen(config.api.port, () => console.log(`Listening on ${config.api.port}...`));

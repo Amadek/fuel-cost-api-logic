@@ -32,6 +32,8 @@ class AuthController {
     if (!req.query.code) throw createError(400);
 
     const requestToken = req.query.code;
+    // accessToken declared out of arrow scope below to be available in Promise chain.
+    let accessToken;
 
     Promise.resolve()
       .then(() => axios({
@@ -47,15 +49,18 @@ class AuthController {
         }
       }))
       .then(response => response.data.access_token)
-      .then(accessToken => axios({
-        method: 'put',
-        url: this._config.api.putTokenUrl,
-        params: {
-          client_secret: this._config.api.github.clientSecret,
-          token: accessToken
-        }
-      }))
-      .then(() => res.send('Authorised.'))
+      .then(token => {
+        accessToken = token;
+        return axios({
+          method: 'put',
+          url: this._config.api.putTokenUrl,
+          params: {
+            client_secret: this._config.api.github.clientSecret,
+            token: accessToken
+          }
+        })
+       })
+      .then(() => res.send(accessToken))
       .then(next)
       .catch(next);
   }
