@@ -27,7 +27,7 @@ module.exports = class TokenController {
     Promise.resolve()
       .then(() => this._getGitHubUser(accessToken))
       .then(githubUser => ({ sourceUserId: githubUser.data.id, accessToken: accessToken }))
-      .then(this._updateOrCreateUserInDB.bind(this))
+      .then(this._updateOrAddUserInDB.bind(this))
       // Send status 'Created'.
       .then(() => res.status(201).end())
       .then(next)
@@ -45,7 +45,7 @@ module.exports = class TokenController {
     });
   }
 
-  _updateOrCreateUserInDB (user) {
+  _updateOrAddUserInDB (user) {
     return Promise.resolve()
       .then(() => this._dbConnector.connect())
       .then(db => db.collection('user').findOneAndUpdate({ sourceUserId: user.sourceUserId }, { $set: user }, { upsert: true }))

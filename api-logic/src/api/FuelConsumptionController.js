@@ -3,6 +3,7 @@ const IDbConnector = require('../logic/IDbConnector');
 const FuelConsumptionParser = require('../logic/FuelConsumptionParser');
 const FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 const FuelConsumptionFinder = require('../logic/FuelConsumptionFinder');
+const TokenValidator = require('./TokenValidator');
 const ILogger = require('../logic/ILogger');
 const createError = require('http-errors');
 
@@ -23,19 +24,16 @@ class FuelConsumptionController {
   }
 
   postFuelConsumption (req, res, next) {
-    const fuelConsumptionFromRequest = req.body;
-    fuelConsumptionFromRequest.created = new Date();
-
-    const fuelConsumptionParser = new FuelConsumptionParser(fuelConsumptionFromRequest);
-    if (!fuelConsumptionParser.parse(fuelConsumptionFromRequest)) {
-      return next(createError(400, fuelConsumptionParser.errorMessage));
-    }
+    let db;
 
     Promise.resolve()
       .then(() => this._dbConnector.connect())
-      .then(db => {
+      .then(database => db = database)
+      .then(db => this._validateToken(req, db))
+      .then(() => this._parseFuelConsumption(req.body))
+      .then(fuelConsumption => {
         const fuelConsumptionAppender = new FuelConsumptionAppender(db, this._logger);
-        return fuelConsumptionAppender.append(fuelConsumptionParser.result);
+        return fuelConsumptionAppender.append(fuelConsumption);
       })
       .then(() => this._dbConnector.close())
       // Send status code 'Created'.
@@ -55,6 +53,25 @@ class FuelConsumptionController {
       .then(() => this._dbConnector.close())
       .then(next)
       .catch(next);
+  }
+
+  _parseFuelConsumption (body) {
+    const fuelConsumptionFromRequest = body;
+    fuelConsumptionFromRequest.created = new Date();
+
+    const fuelConsumptionParser = new FuelConsumptionParser(fuelConsumptionFromRequest);
+    if (!fuelConsumptionParser.parse(fuelConsumptionFromRequest)) {
+      throw createError(400, fuelConsumptionParser.errorMessage);
+    }
+
+    return fuelConsumptionParser.result;
+  }
+
+  _validateToken (req, db) {
+    const token = req.headers.authorization.replace('Bearer ', '');
+    console.log(token);
+    const tokenValidator = new TokenValidator(db);
+    return tokenValidator.validate(token);
   }
 }
 
