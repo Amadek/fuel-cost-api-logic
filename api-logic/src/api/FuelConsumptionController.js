@@ -1,5 +1,4 @@
 const Ensure = require('@amadek/js-sdk/Ensure');
-const IDbConnector = require('../logic/IDbConnector');
 const FuelConsumptionParser = require('../logic/FuelConsumptionParser');
 const FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 const FuelConsumptionFinder = require('../logic/FuelConsumptionFinder');
@@ -8,11 +7,11 @@ const ILogger = require('../logic/ILogger');
 const createError = require('http-errors');
 
 class FuelConsumptionController {
-  constructor (dbConnector, config, logger) {
-    IDbConnector.ensureImplemented(dbConnector);
+  constructor (db, config, logger) {
+    Ensure.notNull(db);
     Ensure.notNull(config);
     ILogger.ensureImplemented(logger);
-    this._dbConnector = dbConnector;
+    this._db = db;
     this._config = config;
     this._logger = logger;
   }
@@ -24,18 +23,13 @@ class FuelConsumptionController {
   }
 
   postFuelConsumption (req, res, next) {
-    let db;
-
     Promise.resolve()
-      .then(() => this._dbConnector.connect())
-      .then(database => db = database)
-      .then(db => this._validateToken(req, db))
+      .then(() => this._validateToken(req))
       .then(() => this._parseFuelConsumption(req.body))
       .then(fuelConsumption => {
-        const fuelConsumptionAppender = new FuelConsumptionAppender(db, this._logger);
+        const fuelConsumptionAppender = new FuelConsumptionAppender(this._db, this._logger);
         return fuelConsumptionAppender.append(fuelConsumption);
       })
-      .then(() => this._dbConnector.close())
       // Send status code 'Created'.
       .then(() => res.status(201).end())
       .then(next)
@@ -44,13 +38,12 @@ class FuelConsumptionController {
 
   getFuelConsumption (req, res, next) {
     Promise.resolve()
-      .then(() => this._dbConnector.connect())
-      .then(db => {
-        const finder = new FuelConsumptionFinder(db, this._logger);
+      .then(() => this._validateToken(req))
+      .then(() => {
+        const finder = new FuelConsumptionFinder(this._db, this._logger);
         return finder.getAll();
       })
       .then(fuelConsumptions => res.json(fuelConsumptions))
-      .then(() => this._dbConnector.close())
       .then(next)
       .catch(next);
   }
@@ -67,10 +60,11 @@ class FuelConsumptionController {
     return fuelConsumptionParser.result;
   }
 
-  _validateToken (req, db) {
+  _validateToken (req) {
+    if (!req.headers.authorization) throw createError(400);
+
     const token = req.headers.authorization.replace('Bearer ', '');
-    console.log(token);
-    const tokenValidator = new TokenValidator(db);
+    const tokenValidator = new TokenValidator(this._db);
     return tokenValidator.validate(token);
   }
 }

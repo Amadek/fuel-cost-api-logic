@@ -8,7 +8,7 @@ class DbConnector {
   }
 
   connect () {
-    this._mongoClient = new MongoClient(this._config.mongodb.url);
+    this._mongoClient = new MongoClient(this._config.mongodb.url, { useUnifiedTopology: true });
 
     return Promise.resolve()
       .then(() => this._mongoClient.connect())

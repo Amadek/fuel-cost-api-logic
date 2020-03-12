@@ -1,13 +1,12 @@
 const Ensure = require('@amadek/js-sdk/Ensure');
 const createError = require('http-errors');
-const IDbConnector = require('../logic/IDbConnector');
 const axios = require('axios');
 
 module.exports = class TokenController {
-  constructor (dbConnector, config) {
-    IDbConnector.ensureImplemented(dbConnector);
+  constructor (db, config) {
+    Ensure.notNull(db);
     Ensure.notNull(config);
-    this._dbConnector = dbConnector;
+    this._db = db;
     this._config = config;
   }
 
@@ -46,9 +45,6 @@ module.exports = class TokenController {
   }
 
   _updateOrAddUserInDB (user) {
-    return Promise.resolve()
-      .then(() => this._dbConnector.connect())
-      .then(db => db.collection('user').findOneAndUpdate({ sourceUserId: user.sourceUserId }, { $set: user }, { upsert: true }))
-      .finally(() => this._dbConnector.close());
+    return this._db.collection('user').findOneAndUpdate({ sourceUserId: user.sourceUserId }, { $set: user }, { upsert: true });
   }
 }
