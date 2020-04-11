@@ -7,12 +7,16 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'npm install'
+        dir('api-logic') {
+          sh 'npm install'
+        }
       }
     }
     stage('Test') {
       steps {
-        sh 'npm test'
+        dir('api-logic') {
+          sh 'npm test'
+        }
       }
     }
   }
