@@ -1,0 +1,33 @@
+fuel-cost-api-auth:
+  container_name: fuel-cost-api-auth
+  build: ./api-auth
+  net: fuel-cost-net
+  ports:
+    - '8181:8181'
+  volumes:
+    - ./api-auth:/app
+  environment:
+    - NODE_ENV=development
+    - PORT=8181
+    - PUT_TOKEN_URL=http://fuel-cost-api:3000/token
+
+fuel-cost-test-api:
+  container_name: fuel-cost-api
+  build: ./api-logic/
+  net: fuel-cost-net
+  ports: 
+    - "3000:3000"
+  volumes:
+    - ./api-logic:/app
+  environment:
+    - NODE_ENV=development
+    - PORT=3000
+    - MONGO_URL=mongodb://mongodb:27017
+    - MONGO_DB_NAME=fuel-cost
+
+mongo:
+  container_name: mongodb
+  image: mongo
+  net: fuel-cost-net
+  ports: 
+    - "27017:27017"

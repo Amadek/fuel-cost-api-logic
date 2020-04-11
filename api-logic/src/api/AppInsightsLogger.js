@@ -1,9 +1,11 @@
 const Ensure = require('@amadek/js-sdk/Ensure');
+const appInsights = require('applicationinsights');
 
 class AppInsightsLogger {
-  constructor (appInsightsClient) {
-    Ensure.notNull(appInsightsClient);
-    this.appInsightsClient = appInsightsClient;
+  constructor () {
+    appInsights.setup(appInsights);
+    appInsights.start();
+    this.appInsightsClient = appInsights.defaultClient;
   }
 
   logEvent (name, properties) {

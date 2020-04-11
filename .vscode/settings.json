@@ -1,8 +1,0 @@
-{
-  "appService.zipIgnorePattern": [
-    "node_modules{,/**}",
-    ".vscode{,/**}"
-  ],
-  "appService.defaultWebAppToDeploy": "/subscriptions/c7f6804e-3a86-4f26-9b54-6bf90a8e636f/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/amadek-fuel-cost",
-  "appService.deploySubpath": ""
-}
