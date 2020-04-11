@@ -1,12 +1,18 @@
 pipeline {
+  agent {
+    docker {
+      image 'node:lts-alpine'
+    }
+  }
   stages {
+    stage('Build') {
+      steps {
+        sh 'npm install'
+      }
+    }
     stage('Test') {
-      agent {
-        docker {
-          dockerfile true
-          dir 'api-logic'
-          args '-e NODE_ENV=testing'
-        }
+      steps {
+        sh 'npm test'
       }
     }
   }

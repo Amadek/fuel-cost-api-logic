@@ -2,17 +2,19 @@ const Ensure = require('@amadek/js-sdk/Ensure');
 const FuelConsumptionParser = require('../logic/FuelConsumptionParser');
 const FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
 const FuelConsumptionFinder = require('../logic/FuelConsumptionFinder');
-const TokenValidator = require('./TokenValidator');
+const ITokenValidator = require('./ITokenValidator');
 const ILogger = require('../logic/ILogger');
 const createError = require('http-errors');
 
 class FuelConsumptionController {
-  constructor (db, config, logger) {
+  constructor (db, config, tokenValidator, logger) {
     Ensure.notNull(db);
     Ensure.notNull(config);
+    ITokenValidator.ensureImplemented(tokenValidator);
     ILogger.ensureImplemented(logger);
     this._db = db;
     this._config = config;
+    this._tokenValidator = tokenValidator;
     this._logger = logger;
   }
 
@@ -64,8 +66,7 @@ class FuelConsumptionController {
     if (!req.headers.authorization) throw createError(400);
 
     const token = req.headers.authorization.replace('Bearer ', '');
-    const tokenValidator = new TokenValidator(this._db);
-    return tokenValidator.validate(token);
+    return this._tokenValidator.validate(token);
   }
 }
 

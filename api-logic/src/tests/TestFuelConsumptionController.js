@@ -1,6 +1,6 @@
 /* global describe, it */
 const assert = require('assert');
-const IndexController = require('../api/FuelConsumptionController');
+const FuelConsumptionController = require('../api/FuelConsumptionController');
 
 console.log(process.env.NODE_ENV);
 
@@ -9,26 +9,25 @@ describe('TestFuelConsumptionController', () => {
     it('should post FuelConsumption to db', done => {
       // ARRANGE
       const fuelConsumption = createFuelConsumption();
-      const req = { body: fuelConsumption };
+      const req = { 
+        body: fuelConsumption,
+        headers: {
+          authorization: 'token'
+        }
+      };
       const res = createResponse();
-      const dbConnector = createDbConnector();
+      const db = createDb();
+      const tokenValidator = createTokenValidator();
       const logger = createLogger();
-      const indexController = new IndexController(dbConnector, {}, logger);
+      const controller = new FuelConsumptionController(db, {}, tokenValidator, logger);
       // ACT
-      indexController.postFuelConsumption(req, res, err => {
-        if (err) done(err);
+      controller.postFuelConsumption(req, res, err => {
+        if (err) return done(err);
         done();
       });
     });
   });
 });
-
-function createDbConnector () {
-  return {
-    connect: createDb,
-    close: () => {}
-  };
-}
 
 function createDb () {
   return {
@@ -51,6 +50,12 @@ function createResponse () {
     send: () => {},
     status: () => { return { end: () => {} }; }
   };
+}
+
+function createTokenValidator () {
+  return {
+    validate: () => true
+  }
 }
 
 function createLogger () {
