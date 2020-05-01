@@ -11,12 +11,12 @@ fuel-cost-api-auth:
     - PORT=8181
     - PUT_TOKEN_URL=http://fuel-cost-api:3000/token
 
-fuel-cost-test-api:
+fuel-cost-api:
   container_name: fuel-cost-api
   build: ./api-logic/
   net: fuel-cost-net
-  ports: 
-    - "3000:3000"
+  ports:
+    - '3000:3000'
   volumes:
     - ./api-logic:/app
   environment:
@@ -30,4 +30,4 @@ mongo:
   image: mongo
   net: fuel-cost-net
   ports: 
-    - "27017:27017"
+    - '27017:27017'
