@@ -16,9 +16,9 @@ module.exports = class TokenController {
   }
 
   putToken (req, res, next) {
-    // If token or correct client secret not provided, throw 'Bad Request'. 
+    // If token or correct client secret not provided, throw 'Bad Request'.
     if (!req.query.token || !req.query.client_secret || req.query.client_secret !== this._config.api.github.clientSecret) {
-      throw createError(400)
+      throw createError(400);
     }
 
     const accessToken = req.query.token;
