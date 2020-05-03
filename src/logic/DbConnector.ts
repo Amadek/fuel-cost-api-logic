@@ -1,13 +1,17 @@
 const Ensure = require('@amadek/js-sdk/Ensure');
-const MongoClient = require('mongodb').MongoClient;
+import { MongoClient, Db } from 'mongodb';
+import { IDbConnector } from './IDbConnector';
 
-class DbConnector {
-  constructor (config) {
+export class DbConnector implements IDbConnector {
+  private readonly _config: any;
+  private _mongoClient: MongoClient;
+
+  public constructor (config: any) {
     Ensure.notNull(config);
     this._config = config;
   }
 
-  connect () {
+  public connect (): Promise<Db> {
     this._mongoClient = new MongoClient(this._config.mongodb.url, { useUnifiedTopology: true });
 
     return Promise.resolve()
@@ -18,10 +22,8 @@ class DbConnector {
       });
   }
 
-  close () {
+  public close (): Promise<void> {
     if (!this._mongoClient) throw new Error('Called close before connect.');
     return this._mongoClient.close();
   }
 }
-
-module.exports = DbConnector;

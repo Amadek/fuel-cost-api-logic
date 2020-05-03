@@ -1,21 +1,26 @@
 const Ensure = require('@amadek/js-sdk/Ensure');
-const createError = require('http-errors');
-const axios = require('axios');
+import createError from 'http-errors';
+import axios from 'axios';
+import { Db } from 'mongodb';
+import { Router } from 'express';
 
-module.exports = class TokenController {
-  constructor (db, config) {
+export class TokenController {
+  private readonly _db: Db;
+  private readonly _config: any;
+
+  public constructor (db: Db, config: any) {
     Ensure.notNull(db);
     Ensure.notNull(config);
     this._db = db;
     this._config = config;
   }
 
-  route (router) {
+  public route (router: Router): Router {
     router.put('/', this.putToken.bind(this));
     return router;
   }
 
-  putToken (req, res, next) {
+  public putToken (req: any, res: any, next: any): void {
     // If token or correct client secret not provided, throw 'Bad Request'.
     if (!req.query.token || !req.query.client_secret || req.query.client_secret !== this._config.api.github.clientSecret) {
       throw createError(400);
@@ -33,7 +38,7 @@ module.exports = class TokenController {
       .catch(next);
   }
 
-  _getGitHubUser (accessToken) {
+  private _getGitHubUser (accessToken: string): Promise<any> {
     return axios({
       method: 'get',
       url: 'https://api.github.com/user',
@@ -44,7 +49,7 @@ module.exports = class TokenController {
     });
   }
 
-  _updateOrAddUserInDB (user) {
+  private _updateOrAddUserInDB (user: any): Promise<any> {
     return this._db.collection('user').findOneAndUpdate({ sourceUserId: user.sourceUserId }, { $set: user }, { upsert: true });
   }
 }

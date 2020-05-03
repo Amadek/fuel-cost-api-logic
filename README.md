@@ -1,4 +1,9 @@
-# FuelCost
-![](https://github.com/Amadek/fuel-cost/workflows/build/badge.svg) ![](https://github.com/Amadek/fuel-cost/workflows/release/badge.svg) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/standard/semistandard)
-
+# FuelCost Logic API
 Project aims to store fuel consumption of your car in easy way by simple API.
+
+## Env to set
+- NODE_ENV: development | testing | production
+- PORT: number
+- MONGO_URL: Url
+- MONGO_DB_NAME: string
+- GITHUB_CLIENT_SECRET: Guid, for OAuth API authorisation

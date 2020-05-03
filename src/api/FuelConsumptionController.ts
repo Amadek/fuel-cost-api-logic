@@ -1,30 +1,34 @@
 const Ensure = require('@amadek/js-sdk/Ensure');
-const FuelConsumptionParser = require('../logic/FuelConsumptionParser');
-const FuelConsumptionAppender = require('../logic/FuelConsumptionAppender');
-const FuelConsumptionFinder = require('../logic/FuelConsumptionFinder');
-const ITokenValidator = require('./ITokenValidator');
-const ILogger = require('../logic/ILogger');
-const createError = require('http-errors');
+import { ITokenValidator } from "./ITokenValidator";
+import { ILogger } from '../logic/ILogger';
+import { Router } from 'express';
+import { FuelConsumptionAppender } from '../logic/FuelConsumptionAppender';
+import { FuelConsumptionFinder } from '../logic/FuelConsumptionFinder';
+import { FuelConsumptionParser } from '../logic/FuelConsumptionParser';
+import createError from 'http-errors';
 
-class FuelConsumptionController {
-  constructor (db, config, tokenValidator, logger) {
+
+export class FuelConsumptionController {
+  private readonly _db: any;
+  private readonly _tokenValidator: ITokenValidator;
+  private readonly _logger: ILogger;
+
+  public constructor (db: any, tokenValidator: ITokenValidator, logger: ILogger) {
     Ensure.notNull(db);
-    Ensure.notNull(config);
-    ITokenValidator.ensureImplemented(tokenValidator);
-    ILogger.ensureImplemented(logger);
+    Ensure.notNull(tokenValidator);
+    Ensure.notNull(logger);
     this._db = db;
-    this._config = config;
     this._tokenValidator = tokenValidator;
     this._logger = logger;
   }
 
-  route (router) {
+  public route (router: Router): Router {
     router.post('/', this.postFuelConsumption.bind(this));
     router.get('/', this.getFuelConsumption.bind(this));
     return router;
   }
 
-  postFuelConsumption (req, res, next) {
+  public postFuelConsumption (req: any, res: any, next: any) {
     Promise.resolve()
       .then(() => this._validateToken(req))
       .then(() => this._parseFuelConsumption(req.body))
@@ -38,7 +42,7 @@ class FuelConsumptionController {
       .catch(next);
   }
 
-  getFuelConsumption (req, res, next) {
+  public getFuelConsumption (req: any, res: any, next: any) {
     Promise.resolve()
       .then(() => this._validateToken(req))
       .then(() => {
@@ -50,24 +54,21 @@ class FuelConsumptionController {
       .catch(next);
   }
 
-  _parseFuelConsumption (body) {
-    const fuelConsumptionFromRequest = body;
-    fuelConsumptionFromRequest.created = new Date();
+  private _parseFuelConsumption (body: any) {
+    const fuelConsumptionFromRequest: any = body;
 
-    const fuelConsumptionParser = new FuelConsumptionParser(fuelConsumptionFromRequest);
-    if (!fuelConsumptionParser.parse(fuelConsumptionFromRequest)) {
+    const fuelConsumptionParser: FuelConsumptionParser = new FuelConsumptionParser(fuelConsumptionFromRequest);
+    if (!fuelConsumptionParser.parse()) {
       throw createError(400, fuelConsumptionParser.errorMessage);
     }
 
     return fuelConsumptionParser.result;
   }
 
-  _validateToken (req) {
+  private _validateToken (req: any) {
     if (!req.headers.authorization) throw createError(400);
 
-    const token = req.headers.authorization.replace('Bearer ', '');
+    const token: string = req.headers.authorization.replace('Bearer ', '');
     return this._tokenValidator.validate(token);
   }
 }
-
-module.exports = FuelConsumptionController;
